@@ -94,7 +94,8 @@ public class Tickets extends JFrame implements ActionListener {
 		// create JMenu bar
 		JMenuBar bar = new JMenuBar();
 		bar.add(mnuFile); // add main menu items in order, to JMenuBar
-		bar.add(mnuAdmin);
+		if (chkIfAdmin)
+			bar.add(mnuAdmin);
 		bar.add(mnuTickets);
 		// add menu bar components to frame
 		setJMenuBar(bar);
@@ -142,12 +143,13 @@ public class Tickets extends JFrame implements ActionListener {
 
 				// Use JTable built in functionality to build a table model and
 				// display the table model off your result set!!!
+				if(chkIfAdmin) {
 				JTable jt = new JTable(ticketsJTable.buildTableModel(dao.readRecords()));
 				jt.setBounds(30, 40, 200, 400);
 				JScrollPane sp = new JScrollPane(jt);
 				add(sp);
 				setVisible(true); // refreshes or repaints frame on screen
-
+				}
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}

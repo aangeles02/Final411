@@ -144,8 +144,16 @@ public class Dao {
 		}
 		return results;
 	}
-	//dsa
+	
 	// continue coding for updateRecords implementation
+	//public updateRecords() {
+		
+	//}
 
 	// continue coding for deleteRecords implementation
+	public void deleteRecords(int ticketnum) {
+		
+		
+	}
+	
 }
