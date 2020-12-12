@@ -143,13 +143,13 @@ public class Tickets extends JFrame implements ActionListener {
 
 				// Use JTable built in functionality to build a table model and
 				// display the table model off your result set!!!
-				if(chkIfAdmin) {
+				//if(chkIfAdmin) {
 				JTable jt = new JTable(ticketsJTable.buildTableModel(dao.readRecords()));
 				jt.setBounds(30, 40, 200, 400);
 				JScrollPane sp = new JScrollPane(jt);
 				add(sp);
 				setVisible(true); // refreshes or repaints frame on screen
-				}
+				//}
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
