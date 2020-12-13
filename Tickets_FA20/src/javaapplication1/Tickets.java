@@ -1,6 +1,7 @@
 package javaapplication1;
 
 import java.awt.Color;
+import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
@@ -21,6 +22,8 @@ public class Tickets extends JFrame implements ActionListener {
 	// class level member objects
 	Dao dao = new Dao(); // for CRUD operations
 	Boolean chkIfAdmin = null;
+	String user;
+	
 
 	// Main menu object items
 	private JMenu mnuFile = new JMenu("File");
@@ -31,14 +34,16 @@ public class Tickets extends JFrame implements ActionListener {
 	JMenuItem mnuItemExit;
 	JMenuItem mnuItemUpdate;
 	JMenuItem mnuItemDelete;
+	JMenuItem mnuItemCloseTicket;
 	JMenuItem mnuItemOpenTicket;
 	JMenuItem mnuItemViewTicket;
 
-	public Tickets(Boolean isAdmin) {
+	public Tickets(Boolean isAdmin, String username) {
 
 		chkIfAdmin = isAdmin;
 		createMenu();
 		prepareGUI();
+		user = username;
 
 	}
 
@@ -60,6 +65,11 @@ public class Tickets extends JFrame implements ActionListener {
 		mnuItemDelete = new JMenuItem("Delete Ticket");
 		// add to Admin main menu item
 		mnuAdmin.add(mnuItemDelete);
+		
+		// initialize third sub menu items for Admin main menu
+		mnuItemCloseTicket = new JMenuItem("Close Ticket");
+		// add to Admin main menu item
+		mnuAdmin.add(mnuItemCloseTicket);
 
 		// initialize first sub menu item for Tickets main menu
 		mnuItemOpenTicket = new JMenuItem("Open Ticket");
@@ -79,6 +89,7 @@ public class Tickets extends JFrame implements ActionListener {
 		mnuItemDelete.addActionListener(this);
 		mnuItemOpenTicket.addActionListener(this);
 		mnuItemViewTicket.addActionListener(this);
+		mnuItemCloseTicket.addActionListener(this);
 
 		 /*
 		  * continue implementing any other desired sub menu items (like 
@@ -121,12 +132,12 @@ public class Tickets extends JFrame implements ActionListener {
 		} else if (e.getSource() == mnuItemOpenTicket) {
 
 			// get ticket information
-			String ticketName = JOptionPane.showInputDialog(null, "Enter your name");
 			String ticketDesc = JOptionPane.showInputDialog(null, "Enter a ticket description");
+			String sDate = JOptionPane.showInputDialog(null, "Enter the start date ex: YYYY-MM-DD");
 
 			// insert ticket information to database
 
-			int id = dao.insertRecords(ticketName, ticketDesc);
+			int id = dao.insertRecords(user, ticketDesc, sDate);
 
 			// display results if successful or not to console / dialog box
 			if (id != 0) {
@@ -143,16 +154,31 @@ public class Tickets extends JFrame implements ActionListener {
 
 				// Use JTable built in functionality to build a table model and
 				// display the table model off your result set!!!
-				//if(chkIfAdmin) {
-				JTable jt = new JTable(ticketsJTable.buildTableModel(dao.readRecords()));
+				JTable jt = new JTable(ticketsJTable.buildTableModel(dao.readRecords(chkIfAdmin,user)));
 				jt.setBounds(30, 40, 200, 400);
 				JScrollPane sp = new JScrollPane(jt);
 				add(sp);
 				setVisible(true); // refreshes or repaints frame on screen
-				//}
 			} catch (SQLException e1) {
 				e1.printStackTrace();
 			}
+		}
+		else if (e.getSource() == mnuItemDelete) {
+			String ticketNum = JOptionPane.showInputDialog(null, "Enter a ticket number");
+			dao.deleteRecords(ticketNum);
+		}
+		else if (e.getSource() == mnuItemUpdate) {
+			String ticketNum = JOptionPane.showInputDialog(null, "Enter a ticket number");
+			String ticketDesc = JOptionPane.showInputDialog(null, "Enter updated ticket description");
+			dao.updateRecords(chkIfAdmin,user,ticketNum, ticketDesc);
+			
+										
+		}
+		else if (e.getSource() == mnuItemCloseTicket) {
+			String ticketNum = JOptionPane.showInputDialog(null, "Enter a ticket number");
+			String ticketClose = JOptionPane.showInputDialog(null, "Enter close date for the ticket ex: YYYY-MM-DD");
+			dao.closeRecords(ticketNum, ticketClose);
+
 		}
 		/*
 		 * continue implementing any other desired sub menu items (like for update and

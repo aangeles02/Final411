@@ -39,8 +39,8 @@ public class Dao {
 
 	public void createTables() {
 		// variables for SQL Query table creations
-		final String createTicketsTable = "CREATE TABLE jpapa_tickets(ticket_id INT AUTO_INCREMENT PRIMARY KEY, ticket_issuer VARCHAR(30), ticket_description VARCHAR(200))";
-		final String createUsersTable = "CREATE TABLE jpapa_users(uid INT AUTO_INCREMENT PRIMARY KEY, uname VARCHAR(30), upass VARCHAR(30), admin int)";
+		final String createTicketsTable = "CREATE TABLE aange2_tickets(ticket_id INT AUTO_INCREMENT PRIMARY KEY, ticket_issuer VARCHAR(30), ticket_description VARCHAR(200), ticket_start_date VARCHAR(200), ticket_end_date VARCHAR(200))";
+		final String createUsersTable = "CREATE TABLE aange_users(uid INT AUTO_INCREMENT PRIMARY KEY, uname VARCHAR(30), upass VARCHAR(30), admin int)";
 
 		try {
 
@@ -95,7 +95,7 @@ public class Dao {
 			// and PASS (insert) that data into your User table
 			for (List<String> rowData : array) {
 
-				sql = "insert into jpapa_users(uname,upass,admin) " + "values('" + rowData.get(0) + "'," + " '"
+				sql = "insert into aange_users(uname,upass,admin) " + "values('" + rowData.get(0) + "'," + " '"
 						+ rowData.get(1) + "','" + rowData.get(2) + "');";
 				statement.executeUpdate(sql);
 			}
@@ -109,12 +109,12 @@ public class Dao {
 		}
 	}
 
-	public int insertRecords(String ticketName, String ticketDesc) {
+	public int insertRecords(String ticketName, String ticketDesc, String sDate) {
 		int id = 0;
 		try {
 			statement = getConnection().createStatement();
-			statement.executeUpdate("Insert into jpapa_tickets" + "(ticket_issuer, ticket_description) values(" + " '"
-					+ ticketName + "','" + ticketDesc + "')", Statement.RETURN_GENERATED_KEYS);
+			statement.executeUpdate("Insert into aange2_tickets" + "(ticket_issuer, ticket_description,ticket_start_date ) values(" + " '"
+					+ ticketName + "','" + ticketDesc +"','"+sDate+ "')", Statement.RETURN_GENERATED_KEYS);
 
 			// retrieve ticket id number newly auto generated upon record insertion
 			ResultSet resultSet = null;
@@ -132,12 +132,15 @@ public class Dao {
 
 	}
 
-	public ResultSet readRecords() {
+	public ResultSet readRecords(boolean isAdmin, String ticketName) {
 
 		ResultSet results = null;
 		try {
 			statement = connect.createStatement();
-			results = statement.executeQuery("SELECT * FROM jpapa_tickets");
+			if (isAdmin == true)
+			results = statement.executeQuery("SELECT * FROM aange2_tickets");
+			else
+				results = statement.executeQuery("SELECT * FROM aange2_tickets WHERE ticket_issuer ='"+ ticketName +"'");
 			//connect.close();
 		} catch (SQLException e1) {
 			e1.printStackTrace();
@@ -146,15 +149,53 @@ public class Dao {
 	}
 	
 	// continue coding for updateRecords implementation
-	//public updateRecords() {
-		
-	//}
+	public void updateRecords(boolean isAdmin,String username,String ticketnum, String ticketDesc) {  
+		try {
+			statement = getConnection().createStatement();
+			int Ud = statement.executeUpdate("UPDATE aange2_tickets SET ticket_description ='"+ticketDesc+"' WHERE ticket_id ='"+ ticketnum+"'");
+			
+			if (Ud != 0)
+				System.out.println("Ticket Number: "+ ticketnum+" was updated");
+			else
+				System.out.println("Ticket Number: "+ ticketnum+" is invaild");
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+	}
 
 	// continue coding for deleteRecords implementation
-	public void deleteRecords(int ticketnum) {
-		
-		
-		
+	public void deleteRecords(String ticketnum) {
+		try {
+			statement = getConnection().createStatement();
+			int vNum = statement.executeUpdate("DELETE FROM aange2_tickets WHERE ticket_id ="+ ticketnum);
+			
+			if (vNum != 0)
+				System.out.println("Ticket Number: "+ticketnum+" was deleted");
+			else
+				System.out.println("Ticket Number: "+ticketnum+" is invaild");
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+			
+	}
+	
+	public void closeRecords(String ticketnum, String ticketeDate) {
+		try {
+			statement = getConnection().createStatement();
+			int eD = statement.executeUpdate("UPDATE aange2_tickets SET ticket_end_date ='"+ticketeDate+"' WHERE ticket_id ='"+ ticketnum+"'");
+			if (eD !=0 ) 
+				System.out.println("Ticket Number: "+ticketnum+"was closed on: "+ ticketeDate);
+			else
+				System.out.println("Ticket Number: "+ticketnum+ " is invaild");
+
+		} catch (SQLException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 }
