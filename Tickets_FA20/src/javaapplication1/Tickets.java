@@ -35,6 +35,7 @@ public class Tickets extends JFrame implements ActionListener {
 	JMenuItem mnuItemUpdate;
 	JMenuItem mnuItemDelete;
 	JMenuItem mnuItemCloseTicket;
+	JMenuItem mnuItemDeletedTickets;
 	JMenuItem mnuItemOpenTicket;
 	JMenuItem mnuItemViewTicket;
 
@@ -70,6 +71,11 @@ public class Tickets extends JFrame implements ActionListener {
 		mnuItemCloseTicket = new JMenuItem("Close Ticket");
 		// add to Admin main menu item
 		mnuAdmin.add(mnuItemCloseTicket);
+		
+		// initialize fourth sub menu items for Admin main menu
+		mnuItemDeletedTickets = new JMenuItem("View deleted tickets");
+		// add to Admin main menu item
+		mnuAdmin.add(mnuItemDeletedTickets);
 
 		// initialize first sub menu item for Tickets main menu
 		mnuItemOpenTicket = new JMenuItem("Open Ticket");
@@ -90,6 +96,7 @@ public class Tickets extends JFrame implements ActionListener {
 		mnuItemOpenTicket.addActionListener(this);
 		mnuItemViewTicket.addActionListener(this);
 		mnuItemCloseTicket.addActionListener(this);
+		mnuItemDeletedTickets.addActionListener(this);
 
 		 /*
 		  * continue implementing any other desired sub menu items (like 
@@ -165,6 +172,9 @@ public class Tickets extends JFrame implements ActionListener {
 		}
 		else if (e.getSource() == mnuItemDelete) {
 			String ticketNum = JOptionPane.showInputDialog(null, "Enter a ticket number");
+			String ticketName = JOptionPane.showInputDialog(null, "Enter name of issuer of ticket");
+			String ticketReason= JOptionPane.showInputDialog(null, "Enter reason for delete");
+			dao.insertRecordstoDelete(ticketName,ticketReason);
 			dao.deleteRecords(ticketNum);
 		}
 		else if (e.getSource() == mnuItemUpdate) {
@@ -179,6 +189,20 @@ public class Tickets extends JFrame implements ActionListener {
 			String ticketClose = JOptionPane.showInputDialog(null, "Enter close date for the ticket ex: YYYY-MM-DD");
 			dao.closeRecords(ticketNum, ticketClose);
 
+		}
+		else if (e.getSource() == mnuItemDeletedTickets) {
+			try {
+
+				// Use JTable built in functionality to build a table model and
+				// display the table model off your result set!!!
+				JTable jt = new JTable(ticketsJTable.buildTableModel(dao.readRecordsDeleted()));
+				jt.setBounds(30, 40, 200, 400);
+				JScrollPane sp = new JScrollPane(jt);
+				add(sp);
+				setVisible(true); // refreshes or repaints frame on screen
+			} catch (SQLException e1) {
+				e1.printStackTrace();
+			}
 		}
 		/*
 		 * continue implementing any other desired sub menu items (like for update and
